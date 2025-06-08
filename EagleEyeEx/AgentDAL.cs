@@ -59,10 +59,10 @@ namespace DAL
             {
 
                 int Id = reader.GetInt32("id");
-                   string CodeName = reader.GetString("codeName");
-                   string RealName = reader.GetString("realName");
-                   string Location = reader.GetString("location");
-                   statusenum Status = (statusenum)Enum.Parse(typeof(statusenum), reader.GetString("status"));
+                string CodeName = reader.GetString("codeName");
+                string RealName = reader.GetString("realName");
+                string Location = reader.GetString("location");
+                statusenum Status = (statusenum)Enum.Parse(typeof(statusenum), reader.GetString("status"));
                 int MissionsCompleted = reader.GetInt32("missionsCompleted");
 
                 Agent agent = new Agent(Id, CodeName, RealName, Location, Status, MissionsCompleted);
