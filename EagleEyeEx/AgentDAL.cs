@@ -23,8 +23,8 @@ namespace DAL
 
             conn.Open();
 
-            string query = @"INSERT INTO agents (codeName, realName, location, status, missionsCompleted)
-                  VALUES (@codeName, @realName, @location, @status, @missionsCompleted)";
+            string query = @"INSERT INTO agents (codeName, realName, location, status)
+                  VALUES (@codeName, @realName, @location, @status)";
 
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
@@ -32,8 +32,7 @@ namespace DAL
             cmd.Parameters.AddWithValue("@realName", agent.RealName);
             cmd.Parameters.AddWithValue("@location", agent.Location);
             cmd.Parameters.AddWithValue("@status", agent.Status.ToString());
-            cmd.Parameters.AddWithValue("@missionsCompleted", agent.MissionsCompleted);
-
+      
             cmd.ExecuteNonQuery();
             conn.Close();
 
@@ -79,11 +78,23 @@ namespace DAL
         public void UpdateAgentLocation(int agentId, string newLocation)
         {
             MySqlConnection conn = new MySqlConnection(ConnectionString);
-
+            conn.Open();
+            string query = "UPDATE agents SET location = @location WHERE id = @id";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@location", newLocation);
+            cmd.Parameters.AddWithValue("@id", agentId);
+            cmd.ExecuteNonQuery();
+            conn.Close();
         }
         public void DeleteAgent(int agentId)
         {
-
+            MySqlConnection conn = new MySqlConnection(ConnectionString);
+            conn.Open();
+            string query = "DELETE FROM agents WHERE id = @id";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@id", agentId);
+            cmd.ExecuteNonQuery();
+            conn.Close();
         }
 
 
