@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using Models;
@@ -20,21 +21,31 @@ namespace DAL
         public void AddAgent(Agent agent)
         {
             MySqlConnection conn = new MySqlConnection(ConnectionString);
+            try
+            {
+                conn.Open();
 
-            conn.Open();
-
-            string query = @"INSERT INTO agents (codeName, realName, location, status)
+                string query = @"INSERT INTO agents (codeName, realName, location, status)
                   VALUES (@codeName, @realName, @location, @status)";
 
-            MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlCommand cmd = new MySqlCommand(query, conn);
 
-            cmd.Parameters.AddWithValue("@codeName", agent.CodeName);
-            cmd.Parameters.AddWithValue("@realName", agent.RealName);
-            cmd.Parameters.AddWithValue("@location", agent.Location);
-            cmd.Parameters.AddWithValue("@status", agent.Status.ToString());
-      
-            cmd.ExecuteNonQuery();
-            conn.Close();
+                cmd.Parameters.AddWithValue("@codeName", agent.CodeName);
+                cmd.Parameters.AddWithValue("@realName", agent.RealName);
+                cmd.Parameters.AddWithValue("@location", agent.Location);
+                cmd.Parameters.AddWithValue("@status", agent.Status.ToString());
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            
 
         }
 
@@ -46,31 +57,43 @@ namespace DAL
             List<Agent> listagent = new List<Agent>();
 
             MySqlConnection conn = new MySqlConnection(ConnectionString);
-
-            conn.Open();
-
-            string query = "SELECT * FROM agents";
-
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-
-            MySqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read())
+            try
             {
+                conn.Open();
 
-                int Id = reader.GetInt32("id");
-                string CodeName = reader.GetString("codeName");
-                string RealName = reader.GetString("realName");
-                string Location = reader.GetString("location");
-                statusenum Status = (statusenum)Enum.Parse(typeof(statusenum), reader.GetString("status"));
-                int MissionsCompleted = reader.GetInt32("missionsCompleted");
+                string query = "SELECT * FROM agents";
 
-                Agent agent = new Agent(Id, CodeName, RealName, Location, Status, MissionsCompleted);
-                listagent.Add(agent);
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+
+                    int Id = reader.GetInt32("id");
+                    string CodeName = reader.GetString("codeName");
+                    string RealName = reader.GetString("realName");
+                    string Location = reader.GetString("location");
+                    statusenum Status = (statusenum)Enum.Parse(typeof(statusenum), reader.GetString("status"));
+                    int MissionsCompleted = reader.GetInt32("missionsCompleted");
+
+                    Agent agent = new Agent(Id, CodeName, RealName, Location, Status, MissionsCompleted);
+                    listagent.Add(agent);
+                    
+                }
+                reader.Close();
             }
-
-            reader.Close();  
-            conn.Close();    
+            catch(Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                
+                conn.Close();
+                
+            }
+             
 
             return listagent;
 
@@ -78,23 +101,45 @@ namespace DAL
         public void UpdateAgentLocation(int agentId, string newLocation)
         {
             MySqlConnection conn = new MySqlConnection(ConnectionString);
-            conn.Open();
-            string query = "UPDATE agents SET location = @location WHERE id = @id";
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@location", newLocation);
-            cmd.Parameters.AddWithValue("@id", agentId);
-            cmd.ExecuteNonQuery();
-            conn.Close();
+            try
+            {
+                conn.Open();
+                string query = "UPDATE agents SET location = @location WHERE id = @id";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@location", newLocation);
+                cmd.Parameters.AddWithValue("@id", agentId);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            
         }
         public void DeleteAgent(int agentId)
         {
             MySqlConnection conn = new MySqlConnection(ConnectionString);
-            conn.Open();
-            string query = "DELETE FROM agents WHERE id = @id";
-            MySqlCommand cmd = new MySqlCommand(query, conn);
-            cmd.Parameters.AddWithValue("@id", agentId);
-            cmd.ExecuteNonQuery();
-            conn.Close();
+            try
+            {
+                conn.Open();
+                string query = "DELETE FROM agents WHERE id = @id";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", agentId);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            { 
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            
         }
 
 
